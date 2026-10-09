@@ -1,0 +1,6 @@
+body{font:16px system-ui,sans-serif;background:#111827;color:#e5e7eb;margin:0}
+main{max-width:1180px;margin:3rem auto;padding:0 1.25rem}
+h1{color:#fff}p{color:#aebdce}.scroll{overflow:auto}
+table{width:100%;border-collapse:collapse;background:#1f2937}
+td,th{padding:.8rem;border-bottom:1px solid #374151;text-align:left;white-space:nowrap}
+th{color:#93c5fd}

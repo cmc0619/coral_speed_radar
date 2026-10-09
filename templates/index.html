@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coral Speed Radar</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main><h1>Coral Speed Radar</h1>
+<p>Experimental camera speed measurement · Coral Edge TPU vehicle detection</p>
+<p id="status">Loading…</p><div class="scroll"><table><thead><tr>
+<th>Time (UTC)</th><th>Plate</th><th>Speed (mph)</th><th>Direction</th>
+<th>Vehicle</th><th>OCR votes</th><th>Post status</th>
+</tr></thead><tbody id="rows"></tbody></table></div>
+<p>Speeds are estimates, not enforcement-grade measurements. OCR requires matching repeated reads.</p>
+</main><script>
+async function refresh() {
+ const status=document.getElementById('status');
+ try {
+  const response=await fetch('/api/events',{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const events=await response.json();
+  const body=document.getElementById('rows');body.replaceChildren();
+  for(const item of events) {
+   const tr=document.createElement('tr');
+   for(const value of [item.detected_at,item.plate||'UNKNOWN',item.speed_mph,
+     item.direction,item.vehicle_type,item.plate_votes,item.post_status]) {
+    const td=document.createElement('td');td.textContent=String(value);tr.appendChild(td);
+   }
+   body.appendChild(tr);
+  }
+  status.textContent=events.length+' recent events';
+ }catch(error){status.textContent='Error: '+error.message;}
+}
+refresh();setInterval(refresh,2000);
+</script></body></html>
