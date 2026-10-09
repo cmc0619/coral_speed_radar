@@ -1,0 +1,59 @@
+services:
+  detector:
+    image: coral-speed-radar-detector:local
+    platform: linux/arm64
+    build:
+      context: .
+      target: detector
+    env_file: .env
+    environment:
+      DATABASE_PATH: /data/radar.db
+      MODEL_PATH: /app/models/detector.tflite
+      LABELS_PATH: /app/models/coco_labels.txt
+    devices:
+      - "${CAMERA_DEVICE:-/dev/video0}:/dev/video0"
+      - "${TPU_DEVICE:-/dev/apex_0}:/dev/apex_0"
+    volumes:
+      - radar-data:/data
+    tmpfs:
+      - /tmp
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    stop_signal: SIGINT
+    stop_grace_period: 60s
+    restart: unless-stopped
+
+  dashboard:
+    image: coral-speed-radar-dashboard:local
+    platform: linux/arm64
+    build:
+      context: .
+      target: dashboard
+    environment:
+      DATABASE_PATH: /data/radar.db
+    volumes:
+      - radar-data:/data
+    ports:
+      - "${DASHBOARD_HOST:-127.0.0.1}:${DASHBOARD_PORT:-8080}:8080"
+    tmpfs:
+      - /tmp
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/events', timeout=3).read()"]
+      interval: 30s
+      timeout: 15s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  radar-data:

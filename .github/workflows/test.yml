@@ -12,3 +12,20 @@ jobs:
         run: python -m compileall -q .
       - name: Test tracking and storage
         run: python -m unittest discover -s tests -v
+  containers:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure Compose
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+      - name: Build native ARM64 images
+        run: docker compose build
+      - name: Test detector image
+        run: |
+          docker run --rm -v "$PWD/tests:/app/tests:ro" \
+            coral-speed-radar-detector:local \
+            python -m unittest discover -s tests -v
+      - name: Check dashboard and persistent storage
+        run: python3 tests/smoke_docker.py
