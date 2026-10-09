@@ -1,0 +1,14 @@
+*
+!Dockerfile
+!requirements-*.txt
+!app.py
+!config.py
+!ocr.py
+!posting.py
+!server.py
+!storage.py
+!tracker.py
+!templates/
+!templates/**
+!static/
+!static/**
