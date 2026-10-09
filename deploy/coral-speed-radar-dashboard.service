@@ -1,0 +1,16 @@
+[Unit]
+Description=Coral Speed Radar Web Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=mendel
+WorkingDirectory=/home/mendel/coral_speed_radar
+EnvironmentFile=/home/mendel/coral_speed_radar/.env
+ExecStart=/usr/bin/python3 /home/mendel/coral_speed_radar/server.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
