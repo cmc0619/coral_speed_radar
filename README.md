@@ -67,3 +67,21 @@ python3 -m unittest discover -s tests -v
 ```
 
 GitHub Actions checks syntax and hardware-independent tracker/database behavior. It cannot validate the Edge TPU runtime, camera capture, plate OCR on traffic, speed accuracy, or X API entitlement. Live hardware testing is still required.
+
+## Start on boot (systemd)
+
+Two example services are in `deploy/`. Both assume the checkout is in
+`/home/mendel/coral_speed_radar` and the board's login is `mendel`.
+Edit the paths/users in the service files if needed.
+
+```sh
+sudo cp deploy/coral-speed-radar*.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now coral-speed-radar.service
+sudo systemctl enable --now coral-speed-radar-dashboard.service
+sudo journalctl -fu coral-speed-radar.service
+```
+
+The service reads environment variables from `.env`, and the dashboard
+reads the same database path. Never make the dashboard's unauthenticated
+web service accessible over the public internet.
