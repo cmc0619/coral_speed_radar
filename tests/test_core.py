@@ -17,7 +17,7 @@ class TrackingTests(unittest.TestCase):
         self.assertIsNone(crossing_time(100, 110, 1, 2, 150))
 
     def test_speed_and_plate(self):
-        tracker = Tracker(200, 400, 10, max_match=120)
+        tracker = Tracker(200, 400, 10, max_match=120, timeout=2)
         for n, x in enumerate((100, 190, 280, 370, 460)):
             pairs, events = tracker.update([detect(x)], float(n))
             self.assertFalse(events)
@@ -29,7 +29,7 @@ class TrackingTests(unittest.TestCase):
         self.assertEqual(events[0]["direction"], "right")
 
     def test_leftward(self):
-        tracker = Tracker(200, 400, 10, max_match=170)
+        tracker = Tracker(200, 400, 10, max_match=170, timeout=2)
         for n, x in enumerate((500, 350, 250, 150)):
             tracker.update([detect(x)], float(n))
         self.assertEqual(tracker.flush()[0]["direction"], "left")
